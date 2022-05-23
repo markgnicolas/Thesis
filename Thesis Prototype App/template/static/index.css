@@ -1,0 +1,176 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* main */
+/* btn-container */
+.btn-container {
+    width: 100%;
+    height: 5%;
+    background-color: #34a450;
+}
+
+/* video-container */
+.video-container {
+    width: 100%;
+    height: 50%;
+    background-color: #11324D;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+/* img-wrapper */
+.img-wrapper,
+.vid-wrapper {
+    width: 720px;
+    height: 640px;
+}
+
+#server {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ctrl-container */
+.ctrl-container {
+    height: 20%;
+    width: 100%;
+    background-color: brown;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* emotion-chart-container */
+.emotion-chart-container {
+    width: 40%;
+    height: 100%;
+    background-color: cadetblue;
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+}
+
+.emotion-bar-wrapper {
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.emotion-label {
+    text-transform: capitalize;
+    margin-bottom: 8px;
+}
+
+.emotion-bar-container {
+    height: 200px;
+    width: 15px;
+    border-radius: 15px;
+    background-color: lightgrey;
+    position: relative;
+}
+
+.emotion-bar-level {
+    position: absolute;
+    bottom: 0;
+    height: 30%;
+    width: 15px;
+    border-radius: 15px;
+    transition: width 1s;
+    background-color: #11324D;
+}
+
+.emotion-chart-container .emotion-bar-container #angry {
+    background-color: #e43055;
+}
+
+.emotion-chart-container .emotion-bar-container #disgust {
+    background-color: #a078b7;
+}
+
+.emotion-chart-container .emotion-bar-container #fear {
+    background-color: #34a450;
+}
+
+.emotion-chart-container .emotion-bar-container #happy {
+    background-color: #f6dc50;
+}
+
+.emotion-chart-container .emotion-bar-container #sad {
+    background-color: #729dc8;
+}
+
+.emotion-chart-container .emotion-bar-container #surprise {
+    background-color: #40a5c1;
+}
+
+.emotion-chart-container .emotion-bar-container #neutral {
+    background-color: gray;
+}
+
+/* attention-chart-container */
+.attention-chart-container {
+    width: 10%;
+    height: 100%;
+    background-color: burlywood;
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+}
+
+.btn-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+/* Button */
+button {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #4f8ff7;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 18px;
+    padding: 8px;
+    width: 175px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 13px;
+    text-transform: capitalize;
+}
+
+button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+}
+
+/* .button span:after {
+content: '\00bb';
+position: absolute;
+opacity: 0;
+top: 0;
+right: -20px;
+transition: 0.5s;
+}
+*/
+button:hover {
+    /* padding-right: 25px; */
+    background-color: #b07008;
+}
+
+/* .button:hover span:after {
+opacity: 1;
+right: 0;
+} */

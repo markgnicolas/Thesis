@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{url_for('static',filename='/index.css')}}">
+    <!-- <link rel="stylesheet" href="./static/index.css"> -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@1.27.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@1.0.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-streaming@2.0.0"></script>
+    <title>Thesis</title>
+</head>
+
+<body>
+    <main>
+        <div class="btn-container">
+            <button id="start">desktop capture</button>
+        </div>
+        <div class="video-container">
+            <div class="vid-wrapper">
+                <video id="video" autoplay height="640" width="720"></video>
+            </div>
+            <div class="img-wrapper">
+                <img id="server">
+            </div>
+        </div>
+        <div>
+            <canvas id="myChart" width="100%" height="25"></canvas>
+        </div>
+    </main>
+    <script>
+        // declaring variables
+        const video = document.getElementById('video');
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var server = document.getElementById('server');
+        let dataStream = {
+            'hope': 0,
+            'pride': 0,
+            'enjoyment': 0,
+            'angry': 0,
+            'anxiety': 0,
+            'shame': 0,
+            'boredom': 0,
+            'hopelessness': 0,
+            'disgust': 0,
+            'surprise': 0,
+            'neutral': 0,
+            'people': 0
+        }
+        const KEYS = ['hope', 'pride', 'enjoyment', 'angry', 'anxiety', 'shame', 'boredom', 'hopelessness', 'disgust', 'fear', 'sad', 'surprise', 'neutral', 'people']
+
+        const data = {
+            datasets: [
+                {
+                    label: 'Hope',
+                    backgroundColor: '#e43055',
+                    borderColor: '#e43055',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [2, 3],
+                    data: []
+                },
+                {
+                    label: 'Pride',
+                    backgroundColor: '#a078b7',
+                    borderColor: '#a078b7',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [4, 3],
+                    data: []
+                },
+                {
+                    label: 'Enjoyment',
+                    backgroundColor: '#34a450',
+                    borderColor: '#34a450',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [6, 3],
+                    data: []
+                },
+                {
+                    label: 'Angry',
+                    backgroundColor: '#f6dc50',
+                    borderColor: '#f6dc50',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [8, 3],
+                    data: []
+                },
+                {
+                    label: 'Anxiety',
+                    backgroundColor: '#40a5c1',
+                    borderColor: '#40a5c1',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [10, 3],
+                    data: []
+                },
+                {
+                    label: 'Shame',
+                    backgroundColor: '#729dc8',
+                    borderColor: '#729dc8',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [12, 3],
+                    data: []
+                },
+                {
+                    label: 'Boredom',
+                    backgroundColor: '#1A132F',
+                    borderColor: '#1A132F',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [14, 3],
+                    data: []
+                },
+                {
+                    label: 'Hopelessness',
+                    backgroundColor: '#874356',
+                    borderColor: '#874356',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [16, 3],
+                    data: []
+                },
+                {
+                    label: 'Disgust',
+                    backgroundColor: '#FDAF75',
+                    borderColor: '#FDAF75',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [18, 3],
+                    data: []
+                },
+                {
+                    label: 'Fear',
+                    backgroundColor: '#F24A72',
+                    borderColor: '#F24A72',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [20, 3],
+                    data: []
+                },
+                {
+                    label: 'Sad',
+                    backgroundColor: '#5B7DB1',
+                    borderColor: '#5B7DB1',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [22, 3],
+                    data: []
+                },
+                {
+                    label: 'Surprise',
+                    backgroundColor: '#FAFFAF',
+                    borderColor: '#FAFFAF',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [24, 3],
+                    data: []
+                },
+                {
+                    label: 'Neutral',
+                    backgroundColor: '#557B83',
+                    borderColor: '#557B83',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [26, 3],
+                    data: []
+                },
+                {
+                    label: 'People',
+                    backgroundColor: '#97DBAE',
+                    borderColor: '#97DBAE',
+                    cubicInterpolationMode: 'monotone',
+                    borderDash: [28, 3],
+                    fill: true,
+                    data: []
+                },
+            ]
+        };
+
+        const onRefresh = chart => {
+            const now = Date.now();
+            let idx = 0;
+            chart.data.datasets.forEach(dataset => {
+                dataset.data.push({
+                    x: now,
+                    y: dataStream[KEYS[idx]]
+                });
+                idx += 1;
+            });
+        };
+
+        const config = {
+            type: 'line',
+            data: data,
+            options: {
+                scales: {
+                    x: {
+                        type: 'realtime',
+                        realtime: {
+                            duration: 60000 * 2,
+                            refresh: 5000,
+                            delay: 2000,
+                            onRefresh: onRefresh
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Value'
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false
+                }
+            }
+        };
+        const chartInit = () => {
+            new Chart(
+                document.getElementById('myChart'),
+                config
+            );
+        }
+        // Get access to the camera!
+        if (Notification.permission === 'granted') {
+            console.log('permission granted for notification')
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                console.log(permission)
+            })
+        }
+        document.getElementById('start').addEventListener('click', () => {
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                navigator.mediaDevices.getDisplayMedia({ video: true }).then(function (stream) {
+                    video.srcObject = stream;
+                    video.play();
+                    chartInit();
+                    let timeStart = new Date()
+                    console.log(timeStart)
+                    window.setInterval(function () {
+                        context.canvas.width = video.videoWidth
+                        context.canvas.height = video.videoHeight
+                        context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+                        canvas.toBlob(upload, "image/jpeg");
+                        if ((Notification.permission === 'granted') && (new Date() - timeStart >= 120000)) {
+                            console.log(timeStart)
+                            const [filteredK, filteredObj] = filterMostFrequentState(dataStream)
+                            timeStart = new Date()
+                            showNotification(filteredK, filteredObj)
+                        }
+                    }, 5000);
+
+                });
+            }
+        })
+        function filterMostFrequentState(obj) {
+            // copy the object
+            const tmp = Object.assign({}, obj)
+            // sort the object from lowest to highest
+            const sorted_tmp = Object.fromEntries(
+                Object.entries(tmp).sort(([, a], [, b]) => b - a)
+            );
+            const sliced_tmp = Object.keys(sorted_tmp).slice(0, 7).reduce((result, key) => {
+                result[key] = sorted_tmp[key];
+
+                return result;
+            }, {});
+            var sliced_tmp_keys = Object.keys(sliced_tmp);
+
+            return [sliced_tmp_keys, sliced_tmp]
+        }
+        function getKeyByValue(object, value) {
+            return Object.keys(object).find(key => object[key] === value);
+        }
+        function showNotification(k, obj) {
+            console.log(k, obj)
+            msgBody = `Number of people detected in class: ${obj['people']}\n${k[1]}: ${obj[k[1]]}\t${k[2]}: ${obj[k[2]]}\n${k[3]}: ${obj[k[3]]}\t${k[4]}: ${obj[k[4]]}\n${k[5]}: ${obj[k[5]]}\t${k[6]}: ${obj[k[6]]}`
+            const notification = new Notification('Latest Affective State of the Class', {
+                body: msgBody
+            })
+        }
+
+        function upload(file) {
+            // create form and add file
+            var formdata = new FormData();
+            formdata.append("snap", file);
+
+            // testing
+            fetch("{{ url_for('upload') }}", {
+                method: 'POST',
+                body: formdata,
+            })
+                .then(res => res.json())
+                .then(data => {
+                    // console.log(data)
+                    server.src = 'data:image/jpeg;base64,' + data.image_url;
+                    dataStream = data.affective_state
+                })
+                .catch(err => alert("PROBLEM\\n\\n" + err));
+        }
+    </script>
+</body>
+
+</html>
